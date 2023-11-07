@@ -6,10 +6,15 @@
   </div>
 </form>
 <% if @clean %>
-  <h2>Result:</h2>
-  <h4>Count: <%= @clean.size %></h4>
-  <h4>Filenames:</h4>
+  <h3>Result:</h3>
+  <p>Count: <%= @clean.size %></p>
+  <div>
+    <label for="filenames">Filenames:</label>
+    <br>
+    <textarea id="filenames" name="filenames" rows="<%=@clean.size+2%>" cols="50">
   <% @clean.each do |filename| %>
-    <p><%= filename %></p>
+<%= filename %>
   <% end %>
+</textarea>
+  </div>
 <% end %>
