@@ -11,7 +11,6 @@ end
 
 before do
   session[:messages] ||= []
-  #
 end
 
 def add_message(msg)
@@ -38,18 +37,12 @@ def filenamebase(filename)
 end
 
 def valid_filetype_upload(filename)
+  # Currently just checks that file extension is pdf
   extension = File.extname(filename).downcase
   extension == '.pdf'
 end
 
-get '/' do
-  erb :index, layout: :layout
-end
-
-get '/extract/pdf' do
-  erb :extract_pdf
-end
-
+# Extract from PDF text wrangler method
 def extract_from_pdf(file_path)
   reader = PDF::Reader.new(file_path)
   raw_text = reader.pages.map { |page| page.text }.join.split
@@ -57,6 +50,17 @@ def extract_from_pdf(file_path)
   clean = selected.map { |filename| filenamebase(filename).gsub(/(\_[fx])+$/, '') }
 end
 
+# Render home
+get '/' do
+  erb :index, layout: :layout
+end
+
+# Render extract PDF page
+get '/extract/pdf' do
+  erb :extract_pdf
+end
+
+# Process uploaded PDF and render extracted results
 post '/upload/pdf' do
   @clean = []
 
@@ -70,13 +74,30 @@ post '/upload/pdf' do
     else
       file = params[:upload][:tempfile]
 
-      # see if I can do this without saving the file first
+      # see if I can do this without saving the file first (just save to session?)
       File.open(session_file_path(filename), 'wb') { |f| f.write(file.read) }
       @clean = extract_from_pdf(session_file_path(filename))
+      session[:clean] = @clean
     end
   end
   FileUtils.rm_rf(session_file_path)
   erb :extract_pdf
+end
+
+# Render compare page
+get '/compare' do
+  session[:list1] ||= session[:clean] || []
+  session[:list2] ||= []
+  erb :compare
+end
+
+post '/compare' do
+  # remove duplicates and add message if duplicates were removed
+
+  # display the differences between the lists
+  @missing_from_a = session[:list1] - session[:list2]
+  @missing_from_b = session[:list2] - session[:list1]
+
 end
 
 not_found do

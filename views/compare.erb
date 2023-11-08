@@ -1,0 +1,10 @@
+<div>
+  <label for="filenames1">A:</label>
+  <br>
+  <textarea id="filenames1" name="filenames1" rows="<%=session[:list1].size+2%>" cols="50"><%=session[:list1].join("\n")%></textarea>
+</div>
+<div>
+  <label for="filenames2">B:</label>
+  <br>
+  <textarea id="filenames2" name="filenames2" rows="<%=session[:list1].size+2%>" cols="50"><%=session[:list2].join("\n")%></textarea>
+</div>
