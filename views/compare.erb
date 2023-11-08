@@ -1,10 +1,41 @@
 <div>
-  <label for="filenames1">A:</label>
-  <br>
-  <textarea id="filenames1" name="filenames1" rows="<%=session[:list1].size+2%>" cols="50"><%=session[:list1].join("\n")%></textarea>
+  <div>
+    <form action="/compare" method="post">
+      <label for="list1">A:</label>
+      <br>
+      <textarea id="list1" name="list1" rows="<%=session[:list1].size+2%>" cols="50"><%=session[:list1].join("\n")%></textarea>
+    </div>
+    <div>
+      <label for="list2">B:</label>
+      <br>
+      <textarea id="list2" name="list2" rows="<%=session[:list1].size+2%>" cols="50"><%=session[:list2].join("\n")%></textarea>
+    </div>
+    <button type="submit">Submit</button>
+  </form>
 </div>
-<div>
-  <label for="filenames2">B:</label>
-  <br>
-  <textarea id="filenames2" name="filenames2" rows="<%=session[:list1].size+2%>" cols="50"><%=session[:list2].join("\n")%></textarea>
-</div>
+<% if @missing_from_a %>
+  <h3>Missing From A:</h3>
+  <p>Count: <%= @missing_from_a.size %></p>
+  <div>
+    <label for="missing_from_a">Filenames:</label>
+    <br>
+    <textarea id="missing_from_a" name="missing_from_a" rows="<%=@missing_from_a.size+2%>" cols="50">
+  <% @missing_from_a.each do |filename| %>
+<%= filename %>
+  <% end %>
+</textarea>
+  </div>
+<% end %>
+<% if @missing_from_b %>
+  <h3>Missing From B:</h3>
+  <p>Count: <%= @missing_from_b.size %></p>
+  <div>
+    <label for="missing_from_b">Filenames:</label>
+    <br>
+    <textarea id="missing_from_b" name="missing_from_b" rows="<%=@missing_from_b.size+2%>" cols="50">
+  <% @missing_from_b.each do |filename| %>
+<%= filename %>
+  <% end %>
+</textarea>
+  </div>
+<% end %>

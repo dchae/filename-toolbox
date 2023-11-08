@@ -9,9 +9,7 @@ configure do
   set :erb, escape_html: true
 end
 
-before do
-  session[:messages] ||= []
-end
+before { session[:messages] ||= [] }
 
 def add_message(msg)
   session[:messages] << msg
@@ -46,8 +44,9 @@ end
 def extract_from_pdf(file_path)
   reader = PDF::Reader.new(file_path)
   raw_text = reader.pages.map { |page| page.text }.join.split
-  selected = raw_text.select { |s| s =~ /(Unit|\d\d\_\d\d)/}
-  clean = selected.map { |filename| filenamebase(filename).gsub(/(\_[fx])+$/, '') }
+  selected = raw_text.select { |s| s =~ /(Unit|\d\d\_\d\d)/ }
+  clean =
+    selected.map { |filename| filenamebase(filename).gsub(/(\_[fx])+$/, '') }
 end
 
 # Render home
@@ -92,12 +91,27 @@ get '/compare' do
 end
 
 post '/compare' do
+  session[:list1] = params[:list1].split
+  p session[:list2] = params[:list2].split
+
   # remove duplicates and add message if duplicates were removed
+  list1_duplicates = session[:list1].tally.select { |k, v| v > 1 }
+  list2_duplicates = session[:list2].tally.select { |k, v| v > 1 }
+  if !list1_duplicates.empty?
+    session[:list1].uniq!
+    add_message "#{list1_duplicates.size} duplicate(s) were removed from A:\n#{list1_duplicates.keys}"
+  end
+
+  if !list2_duplicates.empty?
+    session[:list2].uniq!
+    add_message "#{list2_duplicates.size} duplicate(s) were removed from B"
+  end
 
   # display the differences between the lists
-  @missing_from_a = session[:list1] - session[:list2]
-  @missing_from_b = session[:list2] - session[:list1]
+  @missing_from_a = session[:list2] - session[:list1]
+  @missing_from_b = session[:list1] - session[:list2]
 
+  erb :compare
 end
 
 not_found do
