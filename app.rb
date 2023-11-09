@@ -91,15 +91,15 @@ get '/compare' do
 end
 
 post '/compare' do
-  session[:list1] = params[:list1].split
-  p session[:list2] = params[:list2].split
+  session[:list1] = params[:list1].split.sort
+  p session[:list2] = params[:list2].split.sort
 
   # remove duplicates and add message if duplicates were removed
   list1_duplicates = session[:list1].tally.select { |k, v| v > 1 }
   list2_duplicates = session[:list2].tally.select { |k, v| v > 1 }
   if !list1_duplicates.empty?
     session[:list1].uniq!
-    add_message "#{list1_duplicates.size} duplicate(s) were removed from A:\n#{list1_duplicates.keys}"
+    add_message "#{list1_duplicates.size} duplicate(s) were removed from A:\n#{list1_duplicates.keys.join(", ")}"
   end
 
   if !list2_duplicates.empty?
