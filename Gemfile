@@ -11,5 +11,8 @@ gem "pdf-reader"
 # gem "redcarpet"
 # gem "bcrypt"
 
-ruby "3.2.2"
+group :production do
+  gem "puma"
+end
 
+ruby "3.2.2"
